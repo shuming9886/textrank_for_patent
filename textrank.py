@@ -7,8 +7,7 @@ import os
 
 
 def ReadFile(txtname):
-    filename = '专利/' + txtname
-    fp = open(filename,'r')
+    fp = open(txtname,'r')
     data = []
     for line in fp.readlines():
         line = line.strip()
@@ -137,69 +136,12 @@ def GetDigest(content):
     print(len(summary_str))
     return summary_str
 
-def WriteFile(number,PatentAbstract,summary,Vocabulary):
-    number = str(number)
-    abstract_voca = []
-    content_voca = []
-    for i in jieba.lcut(PatentAbstract):
-        if i in Vocabulary:
-            abstract_voca.append(Vocabulary[i])
-
-    filename1 = "system_100_1_another/system." + number +".txt"
-    fp1 = open(filename1,'w')
-    for i in abstract_voca:
-        fp1.write(str(i) + ' ')
-    fp1.close()
-
-    for j in jieba.lcut(summary):
-        if j in Vocabulary:
-            content_voca.append(Vocabulary[j])
-
-    filename2 = "goldQZ_1_another/gold.QZ." + number + ".txt"
-    fp2 = open(filename2,'w')
-    for i in content_voca:
-        fp2.write(str(i) + ' ')
-    fp2.close()
-
-def GetVocabulary(PatentData):
-    allstr = PatentData['PatentAbstract'] + PatentData['PatentContent']
-    sentences = re.split(r'[，；？。！：]',allstr)
-
-    cutword = []
-    for i in sentences:
-        lst = jieba.lcut(i)
-        for j in lst:
-            cutword.append(j)
-
-    allword = {}
-    for i in cutword:
-        if i in allword:
-            allword[i] = allword[i] +1
-        else:
-            allword[i] = 1
-
-    Vocabulary = {}
-    for i in allword:
-        Vocabulary[i] = len(Vocabulary)
-    return Vocabulary
-
 def main():
     starttime = time.clock()
 
-    # 遍历文件中所有txt文件
-    dirs = os.listdir('专利')
-    txtfile = []
-    for file in dirs:
-        if file.split('.')[1] == 'txt':
-            txtfile.append(file)
-
-    for i in range(len(txtfile)):
-        PatentData = ReadFile(txtfile[i])
-        Vocabulary = GetVocabulary(PatentData)
-        summary = GetDigest(PatentData['PatentContent'])
-        WriteFile(i,PatentData['PatentAbstract'],summary,Vocabulary)
-
-
+    PatentData = ReadFile("CN208315896U.txt")
+    summary = GetDigest(PatentData['PatentContent'])
+    
     endtime = time.clock()
     print("花费时间为:" , endtime - starttime)
 
